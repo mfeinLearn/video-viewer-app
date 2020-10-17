@@ -8,4 +8,9 @@ RSpec.describe Video, type: :model do
         it { should validate_presence_of(:youtube_video_id) }
     end
 
+    context "relationships" do
+        it { should have_many(:comments).dependent(:destroy) }
+    end
+
+
 end

@@ -53,3 +53,15 @@
 1. Destroy The Comment For Comment Matching The Parameter IDs
 
 ###### Webpacker
+
+
+
+
+
+
+
+
+## NOTES
+rails g model Comment content:text rating:integer video:references
+-->
+creates foreign key and that belongs to relationship
