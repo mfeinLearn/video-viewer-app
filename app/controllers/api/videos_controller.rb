@@ -10,6 +10,12 @@ def create
     video = Video.new(video_params)
     if video.save
         render json: video, status: 201
+    else
+        render json: {
+            errors: {
+                messages:  video.errors.messages
+            }
+        }, status: 422
     end
 end
 

@@ -55,7 +55,29 @@ RSpec.describe 'Videos API', type: :request do
                 expect(json[:youtube_video_id]).to eq(valid_attributes[:video][:youtube_video_id])
             end
         end
-        context "when the request in invalid"
+        context "when the request in invalid" do
+
+            before { post '/api/videos', params: {
+                video: {
+                    title: '' ,
+                    description: '' ,
+                    youtube_video_id: ''
+                }
+                } }
+            it "returns a status code of 422" do
+                expect(response).to have_http_status(422) # if you dont define what you are returning you get a 204 as a response
+            end
+            it "returns the validation error messages in JSON" do
+                json = JSON.parse(response.body, symbolize_names: true)
+
+                expect(json).not_to be_empty
+                expect(json[:errors][:messages]).to eq({
+                    :youtube_video_id=>["can't be blank"],
+                    :description=>["can't be blank"],
+                    :title=>["can't be blank"]
+                })
+            end
+        end
     end
 
     #GET /api/video/:id
