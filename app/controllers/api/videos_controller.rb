@@ -23,6 +23,19 @@ def create
     end
 end
 
+def show
+    video = Video.find_by(id: params[:id])
+        if video
+            render json: video, status: 200
+        else
+            render json: {
+                errors: {
+                    messages: { video: "can't be found"}
+                }
+            }, status: 404
+        end
+end
+
 private
 
 def video_params

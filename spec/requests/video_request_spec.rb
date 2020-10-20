@@ -4,6 +4,7 @@ RSpec.describe 'Videos API', type: :request do
 
     # Initial Test Data
     let!(:videos) { FactoryGirl.create_list(:video, 5) }
+    let(:video_id) { videos.first.id }
 
     #GET /api/videos
     #  Returns Collection Of Videos
@@ -16,7 +17,7 @@ RSpec.describe 'Videos API', type: :request do
         end
 
         it 'returns a collection of videos in JSON' do
-            json = JSON.parse(response.body)
+            #json = JSON.parse(response.body)
 
             expect(json).not_to be_empty
             expect(json.size).to eq(5)
@@ -46,7 +47,7 @@ RSpec.describe 'Videos API', type: :request do
                 expect(response).to have_http_status(201)
             end
             it "created a video and returns it in JSON" do
-                json = JSON.parse(response.body, symbolize_names: true)
+                #json = JSON.parse(response.body, symbolize_names: true)
 
                 expect(json).not_to be_empty
                 expect(json[:id]).not_to eq(nil)
@@ -68,7 +69,7 @@ RSpec.describe 'Videos API', type: :request do
                 expect(response).to have_http_status(422) # if you dont define what you are returning you get a 204 as a response
             end
             it "returns the validation error messages in JSON" do
-                json = JSON.parse(response.body, symbolize_names: true)
+                #json = JSON.parse(response.body, symbolize_names: true)
 
                 expect(json).not_to be_empty
                 expect(json[:errors][:messages]).to eq({
@@ -76,6 +77,44 @@ RSpec.describe 'Videos API', type: :request do
                     :description=>["can't be blank"],
                     :title=>["can't be blank"]
                 })
+            end
+        end
+    end
+
+    #GET /api/videos/:id
+    #  Returns a Video
+    describe 'GET /api/videos/:id' do
+
+        context "if video exist" do
+
+            before { get "/api/videos/#{video_id}" }
+
+            it 'return a status code of 200' do
+                expect(response).to have_http_status(200)
+            end
+
+            it 'returns a video in JSON' do
+                #json = JSON.parse(response.body, symbolize_names: true)
+                expect(json).not_to be_empty
+                expect(json[:id]).to eq(video_id)
+                expect(json[:title]).to eq(videos.first.title)
+                expect(json[:description]).to eq(videos.first.description)
+                expect(json[:youtube_video_id]).to eq(videos.first.youtube_video_id)
+            end
+        end
+
+        context "if video does not exist" do
+            before { get "/api/videos/1000" }
+
+            it 'return a status code of 404' do
+                expect(response).to have_http_status(404)
+            end
+
+            it "returns error messages of not found in JSON" do
+                #json = JSON.parse(response.body, symbolize_names: true)
+
+                expect(json).not_to be_empty
+                expect(json[:errors][:messages]).to eq({:video=>"can't be found"})
             end
         end
     end
